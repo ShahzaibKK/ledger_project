@@ -4,13 +4,24 @@ import pandas as pd
 from datetime import datetime
 from io import StringIO
 from pathlib import Path
+import configparser
+import pyinputplus
 
-# Define your credentials
-username = "shahzaibkk"
-password = "PAKistan1122"
+# Initialize ConfigParser and set default values
+config = configparser.ConfigParser()
+config_path = "./.data/config.ini"  # Path to the config.ini file
 
-store_data = Path(".\.data")
-print(store_data)
+# Check if the config file exists and read it
+if Path(config_path).is_file():
+    config.read(config_path)
+    username = config.get("Credentials", "username", fallback=None)
+    password = config.get("Credentials", "password", fallback=None)
+else:
+    # Prompt the user to input username and password if config file doesn't exist
+    username = pyinputplus.inputStr("Please Enter Your Username: ")
+    password = pyinputplus.inputPassword("Please Enter Your Password: ")
+
+store_data = Path(r".\.data")
 
 
 def save_ledger_to_excel(ledger_html_file):
@@ -89,11 +100,11 @@ if login_page.status_code == 200:
 
         # Define parameters for the ledger request
         start_date = datetime(2024, 1, 1)
-        final_date = datetime(2024, 2, 29)
+        final_date = datetime(2024, 1, 31)
 
         ledger_params = {
-            "start": start_date.strftime("%d-%m-%Y"),  # Format date as DD-MM-YYYY
-            "final": final_date.strftime("%d-%m-%Y"),  # Format date as DD-MM-YYYY
+            "start": start_date,  # Format date as DD-MM-YYYY
+            "final": final_date,  # Format date as DD-MM-YYYY
             "ac_id": "258",  # Update with the account ID you want to retrieve
             "ledger_show_type": "item_wise",  # Update with the ledger type you want to retrieve
             "search_date": "yes",
